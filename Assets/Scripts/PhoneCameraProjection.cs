@@ -10,6 +10,8 @@ public class PhoneCameraProjection : MonoBehaviour
     WebCamTexture cam_texture;
     public RawImage backGro;
 
+    public GameObject[] targetItems;
+
     public RawImage setColor;
     public TMP_Text texto;
 
@@ -19,6 +21,9 @@ public class PhoneCameraProjection : MonoBehaviour
 
     Resolution[] camResolutions;
     //camibar este ratio a su lugar 
+
+    float scaleY;
+    float scaleX;
 
     // Start is called before the first frame update
     void Start()
@@ -32,6 +37,20 @@ public class PhoneCameraProjection : MonoBehaviour
 
         ManagerAntiRotation();
         ManagerBackgroundRatio();
+
+        scaleY = backGro.rectTransform.localScale.x;
+        scaleX = backGro.rectTransform.localScale.y;
+
+        //backGro.rectTransform.localScale = new Vector2(1.333f, 1);
+        //backGro.rectTransform.anchoredPosition = new Vector2(0, 2f);
+
+        //no funciona: Localposition
+        //funciona pero con las medidas de unity position
+
+        /*AspectRatioFitter aRFComponent = backGro.GetComponent<AspectRatioFitter>();
+        aRFComponent.enabled = !aRFComponent.enabled;*/
+
+        //ManagerBackgroundPosition();
 
         backGro.texture = cam_texture;
 
@@ -53,15 +72,27 @@ public class PhoneCameraProjection : MonoBehaviour
             "<br>RGB: " + strRGBColor +
             "<br>HSV: " + strHSVColor +
             "<br>Screen h w: " + (Screen.height) + " " + (Screen.width) +
-            "<br>CamTexture h w: " + cam_texture.width + " " + cam_texture.height/* +
-            "<br>Ratio: " + ratio*/;
+            "<br>CamTexture h w: " + cam_texture.width + " " + cam_texture.height+
+            "<br>scaleY: " + scaleY + " ScaleX: " + scaleX;
         Debug.Log(
             "Hex: " + strHexColor +
             " RGB: " + strRGBColor +
             " HSV: " + strHSVColor);
 
         //setColor.GetComponent<Renderer>().material.color = pixelColor;
-        setColor.color = pixelColor;
+        //setColor.color = pixelColor;
+
+        // Set Color of Middle Pixel
+        foreach (GameObject item in targetItems)
+        {
+            if (item.name == "Color")
+            {
+                item.GetComponent<RawImage>().color = pixelColor;
+                continue;
+            }
+            item.GetComponent<Renderer>().material.color = pixelColor;
+        }
+
     }
 
     void ManagerAntiRotation()
@@ -88,16 +119,31 @@ public class PhoneCameraProjection : MonoBehaviour
         else //For PC
             backGro.transform.localScale = new Vector2(width, height);
 
-        AspectRatioFitter myAspectRatioFitter = backGro.GetComponent<AspectRatioFitter>();
-        myAspectRatioFitter.enabled = true;
-        myAspectRatioFitter.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+        AspectRatioFitter aRFComponent = backGro.GetComponent<AspectRatioFitter>();
+        aRFComponent.enabled = !aRFComponent.enabled;
+        aRFComponent.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
         //myAspectRatioFitter.aspectRatio = ratio;
     }
 
+    void ManagerBackgroundPosition()
+    {
+        /*AspectRatioFitter aRFComponent = backGro.GetComponent<AspectRatioFitter>();
+        aRFComponent.enabled = !aRFComponent.enabled;*/
+        
+       // RectTransform rTComponent = backGro.rectTransform;
+        /*rTComponent.anchorMin = new Vector2(0.5f, 1);
+        rTComponent.anchorMax = new Vector2(0.5f, 1);
+        rTComponent.pivot = new Vector2(0.5f, 1); */
+        
+        /*rTComponent.anchorMin = new Vector2(1, 0.5f);
+        rTComponent.anchorMax = new Vector2(1, 0.5f);*/
+       // rTComponent.pivot = new Vector2(1, 1);
+        //rTComponent.position = new Vector2(1, 1);
 
 
-
-
+        //backGro.rectTransform.anchoredPosition = new Vector2(0f,0f);
+        // aRFComponent.enabled = !aRFComponent.enabled;
+    }
 
 
     //-------------- Extension functions
