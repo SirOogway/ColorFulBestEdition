@@ -24,6 +24,11 @@ public class PhoneCameraProjection : MonoBehaviour
 
     float scaleY;
     float scaleX;
+    float heigth;
+    float alturita;
+    float anchito;
+
+    Vector2 back;
 
     // Start is called before the first frame update
     void Start()
@@ -34,12 +39,21 @@ public class PhoneCameraProjection : MonoBehaviour
         /* if(SystemInfo.deviceType == DeviceType.Handheld)
              camResolutions = cam_devices[0].availableResolutions;
         */
-
+        
         ManagerAntiRotation();
-        ManagerBackgroundRatio();
+        //ManagerBackgroundRatio();
 
-        scaleY = backGro.rectTransform.localScale.x;
-        scaleX = backGro.rectTransform.localScale.y;
+
+        //scaleY = backGro.rectTransform.localScale.x;
+        //scaleX = backGro.rectTransform.localScale.y;
+
+
+        //backGro.rectTransform.position = new Vector2(0,1.25f);
+
+        /*heigth = backGro.rectTransform.rect.y;
+        var posY = backGro.rectTransform.rect;
+        posY.x = 400;*/ //400/320 = 1.25
+
 
         //backGro.rectTransform.localScale = new Vector2(1.333f, 1);
         //backGro.rectTransform.anchoredPosition = new Vector2(0, 2f);
@@ -56,16 +70,45 @@ public class PhoneCameraProjection : MonoBehaviour
 
         if (cam_texture != null)
             cam_texture.Play();
+
+        backGro.SetNativeSize();
+
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            backGro.rectTransform.sizeDelta = new Vector2(1066.6664f, 800);
+            backGro.rectTransform.position = new Vector2(0, 1.24994f);
+        }
+        else
+        {
+            //backGro.rectTransform.position = new Vector2(-1.125f, 2.7499992f);
+            backGro.rectTransform.sizeDelta = new Vector2(800, 1066.6664f);
+            backGro.rectTransform.position = new Vector2(0, 1.24994f);
+            // panel manual 177.78 y por codigo 177.7693, estoy perdiendo 0.02 UNY
+        }
     }
 
     // Update is called once per frame
     void Update()
     {
+
+        //backGro.rectTransform.position = new Vector2(-1.125f, 1.25f);
+        //backGro.rectTransform.position = new Vector2(0, 1); //PARA PRUEBAS EL DE ARRIBA ES EL GOOD
+        
+
+        anchito = backGro.rectTransform.rect.width;  
+        alturita = backGro.rectTransform.rect.height;
+
+        var XXXX = backGro.rectTransform.sizeDelta.x;//funciona y me da el mismo valor que anchito
+        //var ALT =backGro.rectTransform.sizeDelta = new Vector2(900,4666); //FUNCIONA PARA SETEAR ALTURA
+
         pixelColor = cam_texture.GetPixel(cam_texture.width / 2, cam_texture.height / 2);
 
         strHexColor = ColorUtility.ToHtmlStringRGB(pixelColor);
         strRGBColor = toStringRGB(pixelColor);
         strHSVColor = toStringHSV(pixelColor);
+
+        
+       // backGro.rectTransform.localScale = new Vector2(480*1.111f, 640*1.111f);
 
         texto.text =
             "Hex: " + strHexColor +
@@ -73,7 +116,8 @@ public class PhoneCameraProjection : MonoBehaviour
             "<br>HSV: " + strHSVColor +
             "<br>Screen h w: " + (Screen.height) + " " + (Screen.width) +
             "<br>CamTexture h w: " + cam_texture.width + " " + cam_texture.height+
-            "<br>scaleY: " + scaleY + " ScaleX: " + scaleX;
+            "<br>rectTransAltura: " + alturita +
+            "<br>rectTransAncho: " + /*anchito*/ anchito;
         Debug.Log(
             "Hex: " + strHexColor +
             " RGB: " + strRGBColor +
@@ -122,6 +166,9 @@ public class PhoneCameraProjection : MonoBehaviour
         AspectRatioFitter aRFComponent = backGro.GetComponent<AspectRatioFitter>();
         aRFComponent.enabled = !aRFComponent.enabled;
         aRFComponent.aspectMode = AspectRatioFitter.AspectMode.FitInParent;
+       
+
+        //aRFComponent.aspectMode = AspectRatioFitter.AspectMode.HeightControlsWidth;
         //myAspectRatioFitter.aspectRatio = ratio;
     }
 
