@@ -3,140 +3,72 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
-
+using ColorExtensions;
 
 public class PhoneCameraProjection : MonoBehaviour
 {
+    WebCamDevice[] cam_devices;
     WebCamTexture cam_texture;
-    public RawImage backGro;
 
-    public GameObject[] targetItems;
-
-    public RawImage setColor;
+    [Tooltip("Background shows the image captured by the camera.")]
+    public RawImage background;
+    [Tooltip("The text that will contain the information about the color models.")]
     public TMP_Text texto;
+
+    [HideInInspector]
+    public Color pixelColor;
 
     string strHexColor, strRGBColor, strHSVColor;
 
-    Color pixelColor;
+    [Tooltip("Allows you to obtain the dimensions of the phone screen in units of unity.")]
+    public Canvas canvas;
+    float widthCanvas; 
+    float heightCanvas;
 
-    Resolution[] camResolutions;
-    //camibar este ratio a su lugar 
-
-    float scaleY;
-    float scaleX;
-    float heigth;
-    float alturita;
-    float anchito;
-
-    Vector2 back;
-
-    // Start is called before the first frame update
     void Start()
     {
-        WebCamDevice[] cam_devices = WebCamTexture.devices;
+        widthCanvas = canvas.GetComponent<RectTransform>().rect.width;
+        heightCanvas = canvas.GetComponent<RectTransform>().rect.height;
+
+        cam_devices = WebCamTexture.devices;
         cam_texture = new WebCamTexture(cam_devices[0].name);// aca va lo de requested frames
 
-        /* if(SystemInfo.deviceType == DeviceType.Handheld)
-             camResolutions = cam_devices[0].availableResolutions;
-        */
-        
-        ManagerAntiRotation();
-        //ManagerBackgroundRatio();
-
-
-        //scaleY = backGro.rectTransform.localScale.x;
-        //scaleX = backGro.rectTransform.localScale.y;
-
-
-        //backGro.rectTransform.position = new Vector2(0,1.25f);
-
-        /*heigth = backGro.rectTransform.rect.y;
-        var posY = backGro.rectTransform.rect;
-        posY.x = 400;*/ //400/320 = 1.25
-
-
-        //backGro.rectTransform.localScale = new Vector2(1.333f, 1);
-        //backGro.rectTransform.anchoredPosition = new Vector2(0, 2f);
-
-        //no funciona: Localposition
-        //funciona pero con las medidas de unity position
-
-        /*AspectRatioFitter aRFComponent = backGro.GetComponent<AspectRatioFitter>();
-        aRFComponent.enabled = !aRFComponent.enabled;*/
-
-        //ManagerBackgroundPosition();
-
-        backGro.texture = cam_texture;
+        background.texture = cam_texture;
 
         if (cam_texture != null)
-            cam_texture.Play();
-
-        backGro.SetNativeSize();
-
-        if (SystemInfo.deviceType == DeviceType.Handheld)
         {
-            backGro.rectTransform.sizeDelta = new Vector2(1066.6664f, 800);
-            backGro.rectTransform.position = new Vector2(0, 1.24994f);
+            cam_texture.Play();
         }
         else
         {
-            //backGro.rectTransform.position = new Vector2(-1.125f, 2.7499992f);
-            backGro.rectTransform.sizeDelta = new Vector2(800, 1066.6664f);
-            backGro.rectTransform.position = new Vector2(0, 1.24994f);
-            // panel manual 177.78 y por codigo 177.7693, estoy perdiendo 0.02 UNY
+            //set a bg and a color by default
         }
+
+        ManagerAntiRotation();
+        ManagerBackgroundSize();
+        ManagerBackgroundPosition();
     }
 
-    // Update is called once per frame
     void Update()
     {
-
-        //backGro.rectTransform.position = new Vector2(-1.125f, 1.25f);
-        //backGro.rectTransform.position = new Vector2(0, 1); //PARA PRUEBAS EL DE ARRIBA ES EL GOOD
-        
-
-        anchito = backGro.rectTransform.rect.width;  
-        alturita = backGro.rectTransform.rect.height;
-
-        var XXXX = backGro.rectTransform.sizeDelta.x;//funciona y me da el mismo valor que anchito
-        //var ALT =backGro.rectTransform.sizeDelta = new Vector2(900,4666); //FUNCIONA PARA SETEAR ALTURA
-
         pixelColor = cam_texture.GetPixel(cam_texture.width / 2, cam_texture.height / 2);
 
         strHexColor = ColorUtility.ToHtmlStringRGB(pixelColor);
-        strRGBColor = toStringRGB(pixelColor);
-        strHSVColor = toStringHSV(pixelColor);
+        strRGBColor = pixelColor.ToStringRGB();
+        strHSVColor = pixelColor.ToStringHSV();
 
-        
-       // backGro.rectTransform.localScale = new Vector2(480*1.111f, 640*1.111f);
-
-        texto.text =
-            "Hex: " + strHexColor +
+        string txt;
+        txt = "Hex: " + strHexColor +
             "<br>RGB: " + strRGBColor +
-            "<br>HSV: " + strHSVColor +
-            "<br>Screen h w: " + (Screen.height) + " " + (Screen.width) +
-            "<br>CamTexture h w: " + cam_texture.width + " " + cam_texture.height+
-            "<br>rectTransAltura: " + alturita +
-            "<br>rectTransAncho: " + /*anchito*/ anchito;
+            "<br>HSV: " + strHSVColor;
+
+        texto.text = txt;
+        /*    
         Debug.Log(
             "Hex: " + strHexColor +
             " RGB: " + strRGBColor +
             " HSV: " + strHSVColor);
-
-        //setColor.GetComponent<Renderer>().material.color = pixelColor;
-        //setColor.color = pixelColor;
-
-        // Set Color of Middle Pixel
-        foreach (GameObject item in targetItems)
-        {
-            if (item.name == "Color")
-            {
-                item.GetComponent<RawImage>().color = pixelColor;
-                continue;
-            }
-            item.GetComponent<Renderer>().material.color = pixelColor;
-        }
-
+        */
     }
 
     void ManagerAntiRotation()
@@ -146,11 +78,11 @@ public class PhoneCameraProjection : MonoBehaviour
             float antiRotate = -90f;
             Quaternion quatRotation = new Quaternion();
             quatRotation.eulerAngles = new Vector3(0f, 0f, antiRotate);
-            backGro.transform.rotation = quatRotation;
+            background.transform.rotation = quatRotation;
         }
     }
 
-    void ManagerBackgroundRatio()
+    /*void ManagerBackgroundRatio()
     {
         float ratio;
         //ratio = (float)Screen.height / (float)Screen.width;
@@ -170,51 +102,68 @@ public class PhoneCameraProjection : MonoBehaviour
 
         //aRFComponent.aspectMode = AspectRatioFitter.AspectMode.HeightControlsWidth;
         //myAspectRatioFitter.aspectRatio = ratio;
+    }*/
+
+    void ManagerBackgroundSize()
+    {
+        float heightBackground, widthBackground, ratio;
+
+        widthBackground = widthCanvas;
+        ratio = Ratio();
+        heightBackground = ratio * widthBackground;
+
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+            background.rectTransform.sizeDelta = new Vector2(heightBackground, widthBackground);
+        else
+            background.rectTransform.sizeDelta = new Vector2(widthBackground, heightBackground);
     }
 
     void ManagerBackgroundPosition()
     {
-        /*AspectRatioFitter aRFComponent = backGro.GetComponent<AspectRatioFitter>();
-        aRFComponent.enabled = !aRFComponent.enabled;*/
-        
-       // RectTransform rTComponent = backGro.rectTransform;
-        /*rTComponent.anchorMin = new Vector2(0.5f, 1);
-        rTComponent.anchorMax = new Vector2(0.5f, 1);
-        rTComponent.pivot = new Vector2(0.5f, 1); */
-        
-        /*rTComponent.anchorMin = new Vector2(1, 0.5f);
-        rTComponent.anchorMax = new Vector2(1, 0.5f);*/
-       // rTComponent.pivot = new Vector2(1, 1);
-        //rTComponent.position = new Vector2(1, 1);
+        float displacementPerUnitScale, heightBackground, deltaTop, displacementScale;
 
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            displacementPerUnitScale = heightCanvas / 10;
+            heightBackground = background.rectTransform.rect.width;
+            deltaTop = (heightCanvas - heightBackground) / 2;
+            displacementScale = deltaTop / displacementPerUnitScale;
 
-        //backGro.rectTransform.anchoredPosition = new Vector2(0f,0f);
-        // aRFComponent.enabled = !aRFComponent.enabled;
+            background.rectTransform.position = new Vector2(0, displacementScale);
+        }
+        else
+        {
+            displacementPerUnitScale = heightCanvas / 10;
+            heightBackground = background.rectTransform.rect.height;
+            deltaTop = (heightCanvas - heightBackground) / 2;
+            displacementScale = deltaTop / displacementPerUnitScale;
+
+            background.rectTransform.position = new Vector2(0, displacementScale);
+        }
     }
 
-
-    //-------------- Extension functions
-    string toStringHSV(Color color) // Convert to extension function
+    float Ratio()
     {
-        int conversionFactH, conversionFactSV;
-        int roundedH, roundedS, roundedV;
 
-        conversionFactH = 359;
-        conversionFactSV = 100;
+        if (SystemInfo.deviceType == DeviceType.Handheld)
+        {
+            Resolution cameraResolution;
+            int frontCamera, mainResolution;
 
-        Color.RGBToHSV(color, out float H, out float S, out float V);
+            frontCamera = 0;
+            mainResolution = 0;
+            cameraResolution = cam_devices[frontCamera].availableResolutions[mainResolution];
 
-        roundedH = Mathf.RoundToInt(H * conversionFactH);
-        roundedS = Mathf.RoundToInt(S * conversionFactSV);
-        roundedV = Mathf.RoundToInt(V * conversionFactSV);
+            float height, width, ratio;
 
-        return $"{roundedH}, {roundedS}, {roundedV}";
+            height = cameraResolution.width;
+            width = cameraResolution.height;
+            ratio = height / width;
+
+            return ratio;
+        }
+
+        return (float)cam_texture.height / (float)cam_texture.width;
     }
 
-    string toStringRGB(Color color)// convert to extension function
-    {
-        //Beacuse for the Color class the RGB color values are porcentages of themselves
-        int conversionFactRGB = 255;
-        return $"{color.r * conversionFactRGB}, {color.g * conversionFactRGB}, {color.b * conversionFactRGB}";
-    }
 }

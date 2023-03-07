@@ -45,7 +45,7 @@ GameObject:
   - component: {fileID: 5340622888925180491}
   - component: {fileID: 3047668745587454134}
   m_Layer: 0
-  m_Name: ColorOfPicker
+  m_Name: Color
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
