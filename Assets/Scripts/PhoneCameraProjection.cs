@@ -7,10 +7,10 @@ using ColorExtensions;
 
 public class PhoneCameraProjection : MonoBehaviour
 {
-    WebCamDevice[] cam_devices;
-    WebCamTexture cam_texture;
+    WebCamDevice[] cam_devices; //vector para almacenar las camaras del celular
+    WebCamTexture cam_texture; //lo que captura la camara
 
-    [Tooltip("Background shows the image captured by the camera.")]
+    [Tooltip("Background shows the image captured by the camera.")] //mostrar mensajes en el inspector
     public RawImage background;
     [Tooltip("The text that will contain the information about the color models.")]
     public TMP_Text texto;
@@ -25,24 +25,25 @@ public class PhoneCameraProjection : MonoBehaviour
     float widthCanvas; 
     float heightCanvas;
 
-    void Start()
+    void Start() //se ejecuta una sola vez al iniciar la aplicacion
     {
         widthCanvas = canvas.GetComponent<RectTransform>().rect.width;
         heightCanvas = canvas.GetComponent<RectTransform>().rect.height;
 
-        cam_devices = WebCamTexture.devices;
-        cam_texture = new WebCamTexture(cam_devices[0].name);// aca va lo de requested frames
-
-        background.texture = cam_texture;
+        cam_devices = WebCamTexture.devices; //obtengo los dispositivos de camara, si tiene 1 camara 2 camaras 3 camaras etc
+        cam_texture = new WebCamTexture(cam_devices[0].name);//cam_devices[0].name <- nombre de donde sacaré la textura , la textura es la secuencia de imagenes (video que
+                                                             //captura la camara)
 
         if (cam_texture != null)
         {
-            cam_texture.Play();
+            cam_texture.Play(); //la camara empieza a capturar
         }
         else
         {
             //set a bg and a color by default
         }
+
+        background.texture = cam_texture; //al background le asignamos la textura(la imagen de la camara) obtenida
 
         ManagerAntiRotation();
         ManagerBackgroundSize();
@@ -53,10 +54,12 @@ public class PhoneCameraProjection : MonoBehaviour
     {
         pixelColor = cam_texture.GetPixel(cam_texture.width / 2, cam_texture.height / 2);
 
+        //conversiones de color
         strHexColor = ColorUtility.ToHtmlStringRGB(pixelColor);
         strRGBColor = pixelColor.ToStringRGB();
         strHSVColor = pixelColor.ToStringHSV();
-
+       
+        //asignamos los valores al texto
         string txt;
         txt = "Hex: " + strHexColor +
             "<br>RGB: " + strRGBColor +
@@ -73,11 +76,12 @@ public class PhoneCameraProjection : MonoBehaviour
 
     void ManagerAntiRotation()
     {
-        if (SystemInfo.deviceType == DeviceType.Handheld)
+        //probar con tablet
+        if (SystemInfo.deviceType == DeviceType.Handheld) //si es un dispositivo movil has esto
         {
             float antiRotate = -90f;
             Quaternion quatRotation = new Quaternion();
-            quatRotation.eulerAngles = new Vector3(0f, 0f, antiRotate);
+            quatRotation.eulerAngles = new Vector3(0f, 0f, antiRotate);// 0grados de rotacion, antirotate = -90 grados de rotacion, eulerAngles es una variable de quatRotation
             background.transform.rotation = quatRotation;
         }
     }
@@ -112,9 +116,9 @@ public class PhoneCameraProjection : MonoBehaviour
         ratio = Ratio();
         heightBackground = ratio * widthBackground;
 
-        if (SystemInfo.deviceType == DeviceType.Handheld)
+        if (SystemInfo.deviceType == DeviceType.Handheld) //para celular
             background.rectTransform.sizeDelta = new Vector2(heightBackground, widthBackground);
-        else
+        else //para pc
             background.rectTransform.sizeDelta = new Vector2(widthBackground, heightBackground);
     }
 
@@ -122,7 +126,7 @@ public class PhoneCameraProjection : MonoBehaviour
     {
         float displacementPerUnitScale, heightBackground, deltaTop, displacementScale;
 
-        if (SystemInfo.deviceType == DeviceType.Handheld)
+        if (SystemInfo.deviceType == DeviceType.Handheld)//para celular
         {
             displacementPerUnitScale = heightCanvas / 10;
             heightBackground = background.rectTransform.rect.width;
@@ -131,7 +135,7 @@ public class PhoneCameraProjection : MonoBehaviour
 
             background.rectTransform.position = new Vector2(0, displacementScale);
         }
-        else
+        else//para pc
         {
             displacementPerUnitScale = heightCanvas / 10;
             heightBackground = background.rectTransform.rect.height;
@@ -152,13 +156,13 @@ public class PhoneCameraProjection : MonoBehaviour
 
             frontCamera = 0;
             mainResolution = 0;
-            cameraResolution = cam_devices[frontCamera].availableResolutions[mainResolution];
+            cameraResolution = cam_devices[frontCamera].availableResolutions[mainResolution];//de la camara principal cogeme la resolucion ej 4:3
 
-            float height, width, ratio;
+            float height, width, ratio; //En esta seccion trabajo con unidades de pixeles
 
             height = cameraResolution.width;
             width = cameraResolution.height;
-            ratio = height / width;
+            ratio = height / width; // ej para 4:3 es 1.333333333, no tiene unidades 
 
             return ratio;
         }
