@@ -1,5 +1,3 @@
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -10,6 +8,11 @@ public class PhoneCameraProjection : MonoBehaviour
     WebCamDevice[] cam_devices; //vector para almacenar las camaras del celular
     WebCamTexture cam_texture; //lo que captura la camara
 
+    [Tooltip("Allows you to obtain the dimensions of the phone screen in units of unity.")]
+    public Canvas canvas;
+    float widthCanvas;
+    float heightCanvas;
+
     [Tooltip("Background shows the image captured by the camera.")] //mostrar mensajes en el inspector
     public RawImage background;
     [Tooltip("The text that will contain the information about the color models.")]
@@ -17,13 +20,11 @@ public class PhoneCameraProjection : MonoBehaviour
 
     [HideInInspector]
     public Color pixelColor;
-
+    public Image colorImage;
+    [Tooltip("The models array contains the information about the color models.")]
+    public TMP_Text[] models;
     string strHexColor, strRGBColor, strHSVColor;
-
-    [Tooltip("Allows you to obtain the dimensions of the phone screen in units of unity.")]
-    public Canvas canvas;
-    float widthCanvas; 
-    float heightCanvas;
+    
 
     void Start() //se ejecuta una sola vez al iniciar la aplicacion
     {
@@ -58,14 +59,15 @@ public class PhoneCameraProjection : MonoBehaviour
         strHexColor = ColorUtility.ToHtmlStringRGB(pixelColor);
         strRGBColor = pixelColor.ToStringRGB();
         strHSVColor = pixelColor.ToStringHSV();
-       
-        //asignamos los valores al texto
-        string txt;
-        txt = "Hex: " + strHexColor +
-            "<br>RGB: " + strRGBColor +
-            "<br>HSV: " + strHSVColor;
 
-        texto.text = txt;
+        //asignamos los modos de color a los textos
+        models[0].text = strHexColor;
+        models[1].text = strRGBColor;
+        models[2].text = strHSVColor;
+
+        //asignamos el color a la imagen
+        colorImage.color = pixelColor;
+
         /*    
         Debug.Log(
             "Hex: " + strHexColor +
