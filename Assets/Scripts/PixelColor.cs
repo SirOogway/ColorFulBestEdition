@@ -10,7 +10,7 @@ public class PixelColor : MonoBehaviour
     Color pixelColor;
 
     public SpriteRenderer? sprite;
-    public RawImage? image;
+    public Image? image;
 
     void Update()
     {
