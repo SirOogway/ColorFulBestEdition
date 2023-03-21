@@ -15,17 +15,15 @@ public class PhoneCameraProjection : MonoBehaviour
 
     [Tooltip("Background shows the image captured by the camera.")] //mostrar mensajes en el inspector
     public RawImage background;
-    [Tooltip("The text that will contain the information about the color models.")]
-    public TMP_Text texto;
 
-    [HideInInspector]
-    public Color pixelColor;
+    [HideInInspector] public Color pixelColor;
     public Image colorImage;
     [Tooltip("The models array contains the information about the color models.")]
     public TMP_Text[] models;
+
+    [Tooltip("The text that will contain the information about the color models.")]
     string strHexColor, strRGBColor, strHSVColor;
     
-
     void Start() //se ejecuta una sola vez al iniciar la aplicacion
     {
         widthCanvas = canvas.GetComponent<RectTransform>().rect.width;
@@ -51,7 +49,7 @@ public class PhoneCameraProjection : MonoBehaviour
         ManagerBackgroundPosition();
     }
 
-    void Update()
+    void Update() //EXPLICARLES POR QUË ESTO ESTÄ EN UPDATE Y NO EN START
     {
         pixelColor = cam_texture.GetPixel(cam_texture.width / 2, cam_texture.height / 2);
 
@@ -68,12 +66,6 @@ public class PhoneCameraProjection : MonoBehaviour
         //asignamos el color a la imagen
         colorImage.color = pixelColor;
 
-        /*    
-        Debug.Log(
-            "Hex: " + strHexColor +
-            " RGB: " + strRGBColor +
-            " HSV: " + strHSVColor);
-        */
     }
 
     void ManagerAntiRotation()
@@ -171,5 +163,7 @@ public class PhoneCameraProjection : MonoBehaviour
 
         return (float)cam_texture.height / (float)cam_texture.width;
     }
+
+    public string GetHexColor() => strHexColor;
 
 }
