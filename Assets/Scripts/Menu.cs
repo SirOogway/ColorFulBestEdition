@@ -3,9 +3,9 @@ using UnityEngine;
 public class Menu : MonoBehaviour
 {
     [Tooltip("GameObject that contains the menu options.")]
-    public GameObject menu;
-    public GameObject history;
-    public GameObject settings;
+    [SerializeField] GameObject menu;
+    [SerializeField] GameObject history;
+    [SerializeField] GameObject settings;
 
     History historyScript;
     SettingsOption settingsScript;
@@ -24,6 +24,7 @@ public class Menu : MonoBehaviour
     }
 
     public void ShowHideMenu() => menu.SetActive(!menu.activeSelf);
-    public void OpenHistory() => historyScript.Open();
+    public void OpenHistory() => historyScript.Open(); //como no es una clase estatica 
+    public void CloseHistory() => historyScript.Close();
     public void OpenSettings() => settingsScript.Open();
 }
