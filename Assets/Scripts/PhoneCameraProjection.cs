@@ -5,53 +5,74 @@ using ColorExtensions;
 
 public class PhoneCameraProjection : MonoBehaviour
 {
+    /*
+    colocar getters y setters donde sea necesario
+    mover este script a la camara
+    crear historial
+    crear opcion de copiar al portapapeles
+    desabilitar y habilitar los modos de color
+    Mostrar más mensajes por consola
+    permitir ajustar de forma manual en el inspector
+    implementar corrutinas para la creacion del archivo
+    cuando se abra el historial que la camara pare de grabar
+     */
+    bool isPhone;
+
     WebCamDevice[] cam_devices; //vector para almacenar las camaras del celular
-    WebCamTexture cam_texture; //lo que captura la camara
+    public WebCamTexture camTexture; //lo que captura la camara
+
+    [Tooltip("Background shows the image captured by the camera.")] //mostrar mensajes en el inspector
+    public RawImage background;
 
     [Tooltip("Allows you to obtain the dimensions of the phone screen in units of unity.")]
     public Canvas canvas;
     float widthCanvas;
     float heightCanvas;
 
-    [Tooltip("Background shows the image captured by the camera.")] //mostrar mensajes en el inspector
-    public RawImage background;
-
     [HideInInspector] public Color pixelColor;
     public Image colorImage;
+
     [Tooltip("The models array contains the information about the color models.")]
     public TMP_Text[] models;
 
     [Tooltip("The text that will contain the information about the color models.")]
     string strHexColor, strRGBColor, strHSVColor;
-    
+
+    private void Awake()
+    {
+        Time.fixedDeltaTime = 1/5f; //1 excecution every 0.2 seconds = 5 exections per second
+        isPhone = SystemInfo.deviceType == DeviceType.Handheld;
+        
+    }
+
     void Start() //se ejecuta una sola vez al iniciar la aplicacion
     {
         widthCanvas = canvas.GetComponent<RectTransform>().rect.width;
         heightCanvas = canvas.GetComponent<RectTransform>().rect.height;
 
         cam_devices = WebCamTexture.devices; //obtengo los dispositivos de camara, si tiene 1 camara 2 camaras 3 camaras etc
-        cam_texture = new WebCamTexture(cam_devices[0].name);//cam_devices[0].name <- nombre de donde sacaré la textura , la textura es la secuencia de imagenes (video que
+        camTexture = new WebCamTexture(cam_devices[0].name);//cam_devices[0].name <- nombre de donde sacaré la textura , la textura es la secuencia de imagenes (video que
                                                              //captura la camara)
 
-        if (cam_texture != null)
+        if (camTexture != null)
         {
-            cam_texture.Play(); //la camara empieza a capturar
+            camTexture.Play(); //la camara empieza a capturar
         }
         else
         {
             //set a bg and a color by default
         }
 
-        background.texture = cam_texture; //al background le asignamos la textura(la imagen de la camara) obtenida
+        background.texture = camTexture; //al background le asignamos la textura(la imagen de la camara) obtenida
 
         ManagerAntiRotation();
         ManagerBackgroundSize();
         ManagerBackgroundPosition();
     }
 
-    void Update() //EXPLICARLES POR QUË ESTO ESTÄ EN UPDATE Y NO EN START
+    void FixedUpdate()
     {
-        pixelColor = cam_texture.GetPixel(cam_texture.width / 2, cam_texture.height / 2);
+        pixelColor = camTexture.GetPixel(camTexture.width / 2, camTexture.height / 2);
 
         //conversiones de color
         strHexColor = ColorUtility.ToHtmlStringRGB(pixelColor);
@@ -71,11 +92,11 @@ public class PhoneCameraProjection : MonoBehaviour
     void ManagerAntiRotation()
     {
         //probar con tablet
-        if (SystemInfo.deviceType == DeviceType.Handheld) //si es un dispositivo movil has esto
+        if (isPhone) //si es un dispositivo movil has esto
         {
-            float antiRotate = -90f;
+            int antiRotate = 360 - 90;//-90f
             Quaternion quatRotation = new Quaternion();
-            quatRotation.eulerAngles = new Vector3(0f, 0f, antiRotate);// 0grados de rotacion, antirotate = -90 grados de rotacion, eulerAngles es una variable de quatRotation
+            quatRotation.eulerAngles = new Vector3(0, 0, antiRotate);// 0grados de rotacion, antirotate = -90 grados de rotacion, eulerAngles es una variable de quatRotation
             background.transform.rotation = quatRotation;
         }
     }
@@ -120,7 +141,7 @@ public class PhoneCameraProjection : MonoBehaviour
     {
         float displacementPerUnitScale, heightBackground, deltaTop, displacementScale;
 
-        if (SystemInfo.deviceType == DeviceType.Handheld)//para celular
+        if (isPhone)//para celular
         {
             displacementPerUnitScale = heightCanvas / 10;
             heightBackground = background.rectTransform.rect.width;
@@ -142,8 +163,7 @@ public class PhoneCameraProjection : MonoBehaviour
 
     float Ratio()
     {
-
-        if (SystemInfo.deviceType == DeviceType.Handheld)
+        if (isPhone)
         {
             Resolution cameraResolution;
             int frontCamera, mainResolution;
@@ -161,9 +181,9 @@ public class PhoneCameraProjection : MonoBehaviour
             return ratio;
         }
 
-        return (float)cam_texture.height / (float)cam_texture.width;
+        return (float)camTexture.height / (float)camTexture.width;
     }
 
+    public WebCamTexture GetCamTexture() => camTexture;
     public string GetHexColor() => strHexColor;
-
 }

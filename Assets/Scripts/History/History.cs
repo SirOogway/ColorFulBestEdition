@@ -1,30 +1,89 @@
 using UnityEngine;
 
 public class History : MonoBehaviour
-{
-    public void SaveHexColor()
+{   //VOLVER CLASE ESTATICA Y A SETTINGSOPTIONS TAMBIEN
+    public PhoneCameraProjection phoneCameraProjection;
+    WebCamTexture camTexture;
+
+    public GameObject history;
+    public GameObject recordPfs;
+    public GameObject parent;
+
+    byte uninstantiatedHexData;
+    bool isFirstOpened;
+    byte aperturas;
+
+    public void Save()
     {
         string hexColor;
-        PhoneCameraProjection phoneCameraProjection;
-
-        phoneCameraProjection = FindObjectOfType<PhoneCameraProjection>();
         hexColor = phoneCameraProjection.GetHexColor();
         SaveManager.SaveColorData(hexColor);
-        Debug.Log($"Saved {hexColor}");
+        uninstantiatedHexData++;
     }
 
 #nullable enable
-    public void LoadHexColor()
+    public void Open()
     {
-        ColorData? colorData = SaveManager.LoadColorData();
+        /*  Stop camera */
+        camTexture = phoneCameraProjection.camTexture;
+        if (camTexture.isPlaying)
+            camTexture.Stop();
 
-        if (colorData == null) Debug.Log("No exist color data");
-        else
-        {
-            string hexColor;
-            hexColor = colorData.hexColor;
-            Debug.Log($"Loaded Color {hexColor}");
-        }
+        /*
+         * If is first opened recovery all data
+         * If not first opened recovery only data uninstantiated
+         */
+
+        /*  Open histoy */
+        isFirstOpened = aperturas == 0;
+        if (aperturas == 0) aperturas++;
+
+        ColorData? hexData = SaveManager.LoadHexData();
+
+         //When history is opened in first time and there are data recover and instantiate all data
+         if (isFirstOpened && hexData != null)
+         {
+             uninstantiatedHexData = (byte)hexData.GetHexModels().Count; 
+             isFirstOpened = !isFirstOpened;
+         }
+
+         history.SetActive(true);
+         InstantiateHexDataOnHistory(hexData, uninstantiatedHexData);
+         uninstantiatedHexData = 0;
+    }
+#nullable disable
+    public void Close()
+    {
+        /*  Cam play    */
+        if (!camTexture.isPlaying)
+            camTexture.Play();
+
+        /*  Close history   */
+        //The history is only disabled, this allows instances to persist
+        history.SetActive(false);
     }
 
+#nullable enable
+    void InstantiateHexDataOnHistory(ColorData? hexData, byte quantityToRecover)
+    {
+        /*  Empty history   */
+        //If there is no data then open the empty histoy 
+        if (hexData == null)
+        {
+            //Pop up or text that contains that no exist data
+             
+            return;
+        }
+
+        /*  History with info   */
+        //Instantiating uninstantiated object
+        for (byte i = 0; i < quantityToRecover; i++)
+        {
+            GameObject record;
+            record = Instantiate(recordPfs, parent.transform);
+            record.name = $"Record_{i + " " + hexData.GetHexModels().Pop()}";
+        }
+    }
+#nullable disable
+    
 }

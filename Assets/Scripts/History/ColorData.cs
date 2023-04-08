@@ -1,10 +1,22 @@
+using System.Collections.Generic;
+
 [System.Serializable]
 public class ColorData
 {
-    public string hexColor;
+    Stack<string> hexModels;
 
-    public ColorData(string color)
+    public ColorData() 
     {
-        hexColor = color;
+        hexModels = new Stack<string>();
+    }
+    
+    public void SetHexModel(string hexModel)
+    {
+        hexModels.Push(hexModel);
+    }
+
+    public Stack<string> GetHexModels()
+    {
+        return hexModels;
     }
 }
