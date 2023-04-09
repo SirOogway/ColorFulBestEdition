@@ -1,13 +1,17 @@
 using UnityEngine;
+using UnityEngine.UI;
 
 public class History : MonoBehaviour
 {   //VOLVER CLASE ESTATICA Y A SETTINGSOPTIONS TAMBIEN
     public PhoneCameraProjection phoneCameraProjection;
     WebCamTexture camTexture;
 
-    public GameObject history;
-    public GameObject recordPfs;
-    public GameObject parent;
+    [SerializeField]
+    GameObject history;
+    [SerializeField]
+    GameObject recordPfs;
+    [SerializeField]
+    GameObject parent;
 
     byte uninstantiatedHexData;
     bool isFirstOpened;
@@ -81,7 +85,13 @@ public class History : MonoBehaviour
         {
             GameObject record;
             record = Instantiate(recordPfs, parent.transform);
-            record.name = $"Record_{i + " " + hexData.GetHexModels().Pop()}";
+            string hex = hexData.GetHexModels().Pop();
+            record.name = $"Record_{i + " " + hex}";
+
+            /*  Asigning the info    */
+            Image fill = record.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
+            fill.color = Color.HSVToRGB(25,40,100);
+            Debug.Log("Color: " + Color.HSVToRGB(25,40,100));
         }
     }
 #nullable disable
