@@ -7,7 +7,11 @@ public static class SaveManager
 {
     static string dataPath = Application.persistentDataPath + "/color.data";
     static BinaryFormatter binaryFormatter = new BinaryFormatter();
-    
+
+
+    /*ESTE TAMBIEN 3
+    string hexModel
+    */
     public static void SaveColorData(string hexModel)
     {
         /*

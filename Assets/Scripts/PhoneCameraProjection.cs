@@ -4,7 +4,7 @@ using TMPro;
 using ColorExtensions;
 
 public class PhoneCameraProjection : MonoBehaviour
-{
+{   
     /*
     colocar getters y setters donde sea necesario
     mover este script a la camara
@@ -22,7 +22,8 @@ public class PhoneCameraProjection : MonoBehaviour
     public WebCamTexture camTexture; //lo que captura la camara
 
     [Tooltip("Background shows the image captured by the camera.")] //mostrar mensajes en el inspector
-    public RawImage background;
+    [SerializeField]
+    RawImage background;
 
     [Tooltip("Allows you to obtain the dimensions of the phone screen in units of unity.")]
     public Canvas canvas;
@@ -45,7 +46,7 @@ public class PhoneCameraProjection : MonoBehaviour
         
     }
 
-    void Start() //se ejecuta una sola vez al iniciar la aplicacion
+    void Start()
     {
         widthCanvas = canvas.GetComponent<RectTransform>().rect.width;
         heightCanvas = canvas.GetComponent<RectTransform>().rect.height;
@@ -55,13 +56,8 @@ public class PhoneCameraProjection : MonoBehaviour
                                                              //captura la camara)
 
         if (camTexture != null)
-        {
             camTexture.Play(); //la camara empieza a capturar
-        }
-        else
-        {
-            //set a bg and a color by default
-        }
+        
 
         background.texture = camTexture; //al background le asignamos la textura(la imagen de la camara) obtenida
 
@@ -73,7 +69,7 @@ public class PhoneCameraProjection : MonoBehaviour
     void FixedUpdate()
     {
         pixelColor = camTexture.GetPixel(camTexture.width / 2, camTexture.height / 2);
-
+        
         //conversiones de color
         strHexColor = ColorUtility.ToHtmlStringRGB(pixelColor);
         strRGBColor = pixelColor.ToStringRGB();
@@ -185,5 +181,8 @@ public class PhoneCameraProjection : MonoBehaviour
     }
 
     public WebCamTexture GetCamTexture() => camTexture;
-    public string GetHexColor() => strHexColor;
+    /*ESTE TAMBIEN 1
+     * public string GetHexColor() => strHexColor;
+     */
+    public Color GetHexColor() => pixelColor;
 }

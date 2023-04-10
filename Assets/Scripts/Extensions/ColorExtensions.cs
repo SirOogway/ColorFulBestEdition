@@ -7,25 +7,31 @@ namespace ColorExtensions
         public static string ToStringHSV(this Color hexadecimalColor)
         {
             int conversionFactH, conversionFactSV;
-            int realHue, realSaturation, realValue;
+            int roundedHue, roundedSaturation, roundedValue;
 
             conversionFactH = 360;
             conversionFactSV = 100;
 
             Color.RGBToHSV(hexadecimalColor, out float H, out float S, out float V);
 
-            realHue = Mathf.RoundToInt(H * conversionFactH);
-            realSaturation = Mathf.RoundToInt(S * conversionFactSV);
-            realValue = Mathf.RoundToInt(V * conversionFactSV);
+            roundedHue = Mathf.RoundToInt(H * conversionFactH);
+            roundedSaturation = Mathf.RoundToInt(S * conversionFactSV);
+            roundedValue = Mathf.RoundToInt(V * conversionFactSV);
 
-            return $"{realHue}, {realSaturation}, {realValue}";
+            return $"{roundedHue}, {roundedSaturation}, {roundedValue}";
         }
 
-        public static string ToStringRGB(this Color hexadecimalColor)
+        public static string ToStringRGB(this Color rgb)
         {
             //Beacuse for the Color class the RGB color values are porcentages of themselves
             int conversionFactRGB = 255;
-            return $"{hexadecimalColor.r * conversionFactRGB}, {hexadecimalColor.g * conversionFactRGB}, {hexadecimalColor.b * conversionFactRGB}";
+
+            int r, g, b;
+            r = Mathf.RoundToInt(rgb.r * conversionFactRGB);
+            g = Mathf.RoundToInt(rgb.g * conversionFactRGB);
+            b = Mathf.RoundToInt(rgb.b * conversionFactRGB);
+
+            return $"{r}, {g}, {b}";
         }
     }
 

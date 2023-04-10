@@ -15,6 +15,8 @@ public class SwitchHandler : MonoBehaviour
     bool swModels;
 
     [SerializeField]
+    GameObject parent;
+    [SerializeField]
     GameObject typeModel;
     [SerializeField]
     GameObject model;
@@ -43,6 +45,14 @@ public class SwitchHandler : MonoBehaviour
 
     void ActiveDisableModel()
     {
+        string parentName = parent.name;
+        if (parentName == "HEX")
+            stateHEX = !stateHEX;
+        if (parentName == "RGB")
+            stateRGB = !stateRGB;
+        if (parentName == "HSV")
+            stateHSV = !stateHSV;
+
         if (swModels)
             DisableModel();
         else
@@ -61,4 +71,13 @@ public class SwitchHandler : MonoBehaviour
         typeModelText.color = disableColor;
         modelText.color = disableColor;
     }
+
+    /*  Statics properties and functions    */
+    static bool stateHEX = true;
+    static bool stateRGB = true;
+    static bool stateHSV = true;
+
+    public static bool GetStateHEXModel() => stateHEX;
+    public static bool GetStateRGBModel() => stateRGB;
+    public static bool GetStateHSVModel() => stateHSV;
 }
