@@ -88,7 +88,7 @@ public class History : MonoBehaviour
             return;
         }
         bool organizingMultipleInfoOnHistory = false;
-        List<GameObject> temporalRegister = new List<GameObject>();
+        Stack<GameObject> temporalRegister = new Stack<GameObject>();
 
         /*  History with info   */
         //Instantiating uninstantiated object
@@ -99,14 +99,22 @@ public class History : MonoBehaviour
             record = Instantiate(recordPfs, parent.transform);
             record.name = $"Record_{pixelColor}";
 
-            if (isFirstOpened && quantityToRecover > 1)//nad is tratingMultipleNewInfo is true
+            if (!isFirstOpened)
             {
-                organizingMultipleInfoOnHistory = true;
-                temporalRegister.Add(record);
+                if (quantityToRecover == 1)//nad is tratingMultipleNewInfo is false
+                    record.transform.SetAsFirstSibling();
+                
+                if (quantityToRecover > 1)//nad is tratingMultipleNewInfo is true
+                {
+                    organizingMultipleInfoOnHistory = true;
+                    temporalRegister.Push(record);
+                }
             }
-
-            if (isFirstOpened && quantityToRecover == 1)//nad is tratingMultipleNewInfo is false
+            else
+            {
                 record.transform.SetAsFirstSibling();
+            }
+            
 
 
             /*  Assigning the info    */
@@ -147,12 +155,13 @@ public class History : MonoBehaviour
 
         }
 
-        if (organizingMultipleInfoOnHistory)//is trating info
+        if (organizingMultipleInfoOnHistory)
         {
             foreach (GameObject record in temporalRegister)
             {
                 record.transform.SetAsFirstSibling();
             }
+            organizingMultipleInfoOnHistory = false;
         }
     }
 #nullable disable
