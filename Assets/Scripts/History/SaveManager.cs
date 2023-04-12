@@ -2,17 +2,15 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
+using System;
 
 public static class SaveManager
 {
     static string dataPath = Application.persistentDataPath + "/color.data";
+    static string counterPath = Application.persistentDataPath + "/counter.data";
     static BinaryFormatter binaryFormatter = new BinaryFormatter();
-
-
-    /*ESTE TAMBIEN 3
-    string hexModel
-    */
-    public static void SaveColorData(string hexModel)
+    
+    public static void SaveColorData(string hexModel)//no es hexmodel es colorData(rgb pero en porcentajes)
     {
         /*
          * when path no exist \ok\
@@ -91,8 +89,8 @@ public static class SaveManager
         }
     }
 #nullable disable
-
-    private static bool IsEmptyFile()
+    
+    static bool IsEmptyFile()
     {
         try
         {
@@ -110,7 +108,7 @@ public static class SaveManager
         }
     }
 
-    public static void ShowHexColors(ColorData colorsData, string msm ="")
+    static void ShowHexColors(ColorData colorsData, string msm ="")
     {
         foreach (string hex in colorsData.GetHexModels())
         {

@@ -16,6 +16,8 @@ public class History : MonoBehaviour
     [SerializeField]
     GameObject parent;
     [SerializeField]
+    TMP_Text counterText;
+    [SerializeField]
     GameObject pointer;
 
     byte uninstantiatedHexData;
@@ -51,16 +53,35 @@ public class History : MonoBehaviour
 
         ColorData? hexData = SaveManager.LoadHexData();
 
-         //When history is opened in first time and there are data recover and instantiate all data
-         if (isFirstOpened && hexData != null)
-         {
+        //When history is opened in first time and there are data recover and instantiate all data
+        if (isFirstOpened && hexData != null)
+        {
             uninstantiatedHexData = (byte)hexData.GetHexModels().Count; 
             isFirstOpened = !isFirstOpened;
+        
         }
 
          history.SetActive(true);
          InstantiateHexDataOnHistory(hexData, uninstantiatedHexData, isFirstOpened);
-         uninstantiatedHexData = 0;
+
+        /*  Counting the color  */
+        int colorsCounted = 0;  
+        int limitAmount = 2;
+        colorsCounted += uninstantiatedHexData;
+
+        if (colorsCounted > limitAmount)
+        {
+            Debug.LogError("Has reached the limit");
+            //Colocar pantallazo de la muerte para que paguen
+            //history.close()
+            //wait 2 seconds
+            //pammm pantallazo azul
+            return;
+        }
+
+        counterText.text = $"{colorsCounted}/{limitAmount}";
+
+        uninstantiatedHexData = 0;
     }
 #nullable disable
     public void Close()
