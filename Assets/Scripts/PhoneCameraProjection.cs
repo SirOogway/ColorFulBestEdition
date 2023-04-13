@@ -21,16 +21,16 @@ public class PhoneCameraProjection : MonoBehaviour
     WebCamDevice[] cam_devices; //vector para almacenar las camaras del celular
     public WebCamTexture camTexture; //lo que captura la camara
 
-    [Tooltip("Background shows the image captured by the camera.")] //mostrar mensajes en el inspector
-    [SerializeField]
+    [SerializeField] [Tooltip("Background shows the image captured by the camera.")] //mostrar mensajes en el inspector
     RawImage background;
 
-    [Tooltip("Allows you to obtain the dimensions of the phone screen in units of unity.")]
-    public Canvas canvas;
+    [SerializeField] [Tooltip("Allows you to obtain the dimensions of the phone screen in units of unity.")]
+    Canvas canvas;
     float widthCanvas;
     float heightCanvas;
 
-    [HideInInspector] public Color pixelColor;
+    [HideInInspector] 
+    public Color pixelColor;
     public Image colorImage;
 
     [Tooltip("The models array contains the information about the color models.")]
@@ -41,7 +41,7 @@ public class PhoneCameraProjection : MonoBehaviour
 
     private void Awake()
     {
-        Time.fixedDeltaTime = 1/5f; //1 excecution every 0.2 seconds = 5 exections per second
+        Time.fixedDeltaTime = 7/25f; //1 excecution every 0.2 seconds = 5 exections per second
         isPhone = SystemInfo.deviceType == DeviceType.Handheld;
         
     }

@@ -19,15 +19,33 @@ public class History : MonoBehaviour
     TMP_Text counterText;
     [SerializeField]
     GameObject pointer;
+    [SerializeField]
+    Button deleteHistoryButton; 
 
     byte uninstantiatedHexData;
     bool isFirstOpened;
     byte aperturas;
 
+    [SerializeField]
+    int limitAmount = 4;
+
+    public bool haveData;
+
+
+    private void Update()
+    {
+        ///METER BUENA INFO ACA que si se necesita para actualizar titulo por ejemplo o si el boton está activo o inactivo
+    }
+
     public void Save()
     {
-        string hexColor = phoneCameraProjection.GetHexColor().ToString();//no es un hexColor, es un colorString
+        if (SaveManager.CountData() >= limitAmount)
+        {
+            Debug.LogError("Storage limit exceeded");
+            return;
+        }
 
+        string hexColor = phoneCameraProjection.GetHexColor().ToString();//no es un hexColor, es un colorString
         SaveManager.SaveColorData(hexColor);
         uninstantiatedHexData++;
     }
@@ -51,35 +69,22 @@ public class History : MonoBehaviour
         isFirstOpened = aperturas == 0;
         if (aperturas == 0) aperturas++;
 
-        ColorData? hexData = SaveManager.LoadHexData();
+        ColorData? hexData = SaveManager.LoadHexData();//ver si realmente es hexdata
+
+        counterText.text = $"{SaveManager.CountData()}/{limitAmount}";
+
+        haveData = hexData == null;
+        DisableDeleteHistoryButton(!haveData);
 
         //When history is opened in first time and there are data recover and instantiate all data
         if (isFirstOpened && hexData != null)
         {
             uninstantiatedHexData = (byte)hexData.GetHexModels().Count; 
             isFirstOpened = !isFirstOpened;
-        
         }
 
-         history.SetActive(true);
-         InstantiateHexDataOnHistory(hexData, uninstantiatedHexData, isFirstOpened);
-
-        /*  Counting the color  */
-        int colorsCounted = 0;  
-        int limitAmount = 2;
-        colorsCounted += uninstantiatedHexData;
-
-        if (colorsCounted > limitAmount)
-        {
-            Debug.LogError("Has reached the limit");
-            //Colocar pantallazo de la muerte para que paguen
-            //history.close()
-            //wait 2 seconds
-            //pammm pantallazo azul
-            return;
-        }
-
-        counterText.text = $"{colorsCounted}/{limitAmount}";
+        history.SetActive(true);
+        InstantiateHexDataOnHistory(hexData, uninstantiatedHexData, isFirstOpened);
 
         uninstantiatedHexData = 0;
     }
@@ -186,4 +191,22 @@ public class History : MonoBehaviour
         }
     }
 #nullable disable
+
+    private void DisableDeleteHistoryButton(bool state) => deleteHistoryButton.interactable = state;
+    
+    public void DeleteHistory()
+    {
+        SaveManager.DeleteData();
+
+        for (int i = 0; i < parent.transform.childCount; i++)
+        {
+            GameObject recordToDestroy = parent.transform.GetChild(i).gameObject;
+            Destroy(recordToDestroy);
+        }
+
+        counterText.text = $"{SaveManager.CountData()}/{limitAmount}";
+        uninstantiatedHexData = 0;
+        aperturas = 0;
+        
+    }
 }

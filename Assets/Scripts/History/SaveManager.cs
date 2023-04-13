@@ -2,14 +2,14 @@ using UnityEngine;
 using System.IO;
 using System.Runtime.Serialization;
 using System.Runtime.Serialization.Formatters.Binary;
-using System;
 
 public static class SaveManager
 {
     static string dataPath = Application.persistentDataPath + "/color.data";
-    static string counterPath = Application.persistentDataPath + "/counter.data";
     static BinaryFormatter binaryFormatter = new BinaryFormatter();
-    
+    //*/**/*/*/*//*/*/
+    static ColorData colorsData = new ColorData();
+
     public static void SaveColorData(string hexModel)//no es hexmodel es colorData(rgb pero en porcentajes)
     {
         /*
@@ -19,7 +19,7 @@ public static class SaveManager
          * 
          */
 
-        ColorData colorsData = new ColorData();
+        //static ColorData colorsData = new ColorData();
 
         if (!File.Exists(dataPath))
             using (FileStream fs = File.Create(dataPath))
@@ -59,6 +59,28 @@ public static class SaveManager
     }
 
 #nullable enable
+
+    public static int CountData() //count data on file
+    {
+        if (!File.Exists(dataPath))
+        {
+            Debug.LogError("No path created to count data");
+            return 0;
+        }
+        else if (IsEmptyFile())
+        {
+            Debug.LogError("Empty file, no counted data");
+            return 0;
+        }
+
+        using (FileStream opener = File.Open(dataPath, FileMode.Open))
+        {
+            colorsData = (ColorData)binaryFormatter.Deserialize(opener);
+        }
+
+        return colorsData.GetHexModels().Count;
+    }
+
     public static ColorData? LoadHexData()
     {
         /*
@@ -108,6 +130,12 @@ public static class SaveManager
         }
     }
 
+
+    public static void DeleteData()
+    {
+        colorsData = new ColorData();
+        File.Delete(dataPath);
+    }
     static void ShowHexColors(ColorData colorsData, string msm ="")
     {
         foreach (string hex in colorsData.GetHexModels())
