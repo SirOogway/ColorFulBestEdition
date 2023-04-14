@@ -16,7 +16,7 @@ public class PhoneCameraProjection : MonoBehaviour
     implementar corrutinas para la creacion del archivo
     cuando se abra el historial que la camara pare de grabar
      */
-    bool isPhone;
+    bool isPhone; // ser accesible desde otros scripts en este caso Menu.cs
 
     WebCamDevice[] cam_devices; //vector para almacenar las camaras del celular
     public WebCamTexture camTexture; //lo que captura la camara
@@ -63,7 +63,7 @@ public class PhoneCameraProjection : MonoBehaviour
 
         ManagerAntiRotation();
         ManagerBackgroundSize();
-        ManagerBackgroundPosition();
+        //ManagerBackgroundPosition();
     }
 
     void FixedUpdate()
@@ -123,6 +123,24 @@ public class PhoneCameraProjection : MonoBehaviour
     {
         float heightBackground, widthBackground, ratio;
 
+        heightBackground = heightCanvas;
+        ratio = Ratio();
+        widthBackground = heightBackground / ratio;
+
+        if (SystemInfo.deviceType == DeviceType.Handheld) //para celular
+        {
+            background.rectTransform.sizeDelta = new Vector2(heightBackground, widthBackground);
+            background.GetComponent<BoxCollider>().size = new Vector3(heightBackground, widthBackground, 1);
+        }
+        else //para pc
+        {
+            background.rectTransform.sizeDelta = new Vector2(widthBackground, heightBackground);
+            background.GetComponent<BoxCollider>().size = new Vector3(widthBackground, heightBackground, 1);
+        }
+
+        /*Managing the box collider size*/
+
+        /*
         widthBackground = widthCanvas;
         ratio = Ratio();
         heightBackground = ratio * widthBackground;
@@ -131,6 +149,8 @@ public class PhoneCameraProjection : MonoBehaviour
             background.rectTransform.sizeDelta = new Vector2(heightBackground, widthBackground);
         else //para pc
             background.rectTransform.sizeDelta = new Vector2(widthBackground, heightBackground);
+
+        */
     }
 
     void ManagerBackgroundPosition()
