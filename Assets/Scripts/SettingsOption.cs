@@ -2,10 +2,8 @@ using UnityEngine;
 
 public class SettingsOption : MonoBehaviour
 {
-    [SerializeField]
-    GameObject settingMenu;
-    [SerializeField]
-    GameObject pointer;
+    [SerializeField] GameObject settingMenu;
+    [SerializeField] GameObject pointer;
     public void Open()
     {
         pointer.SetActive(false);

@@ -3,32 +3,29 @@ using ColorExtensions;
 
 public class Clipboard : MonoBehaviour
 {
-    string clipboardText;
-
-    [SerializeField]
-    PhoneCameraProjection phoneCameraProjection;
-
-    Color pixelColor;
+    [SerializeField] PhoneCameraProjection phoneCameraProjection;
 
     public void Copy()
     {
-        clipboardText = "";
+        Color pixelColor;
         pixelColor = phoneCameraProjection.GetHexColor();
 
         //conversiones de color
-        string strHexColor, strRGBColor, strHSVColor;
-        
+        string clipboardText, strHexColor, strRGBColor, strHSVColor;
+
+        clipboardText = "";
+
         strHexColor = ColorUtility.ToHtmlStringRGB(pixelColor);
         strRGBColor = pixelColor.ToStringRGB();
         strHSVColor = pixelColor.ToStringHSV();
 
         //When a model is active it is possible copy into clipboard
         if (SwitchHandler.GetStateHEXModel())
-          clipboardText = ($"HEX: {strHexColor}");
+          clipboardText = ($"HEX: {strHexColor}\n");
         if (SwitchHandler.GetStateRGBModel())
-          clipboardText += ($"\nRGB: {strRGBColor}");
+          clipboardText += ($"RGB: {strRGBColor}\n");
         if (SwitchHandler.GetStateHSVModel())
-          clipboardText += ($"\nHSV: {strHSVColor}");
+          clipboardText += ($"HSV: {strHSVColor}");
 
         //Copying into clipboard
         TextEditor textEditor = new TextEditor();
@@ -39,5 +36,4 @@ public class Clipboard : MonoBehaviour
         Debug.Log($"Copied to clipboard \n" +
             $"{textEditor.text}");
     }
-
 }

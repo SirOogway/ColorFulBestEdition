@@ -5,18 +5,9 @@ public class ColorData
 {
     Stack<string> hexModels;
 
-    public ColorData() 
-    {
-        hexModels = new Stack<string>();
-    }
+    public ColorData() => hexModels = new Stack<string>();
     
-    public void SetHexModel(string hexModel)
-    {
-        hexModels.Push(hexModel);
-    }
+    public void SetHexModel(string hexModel) => hexModels.Push(hexModel);
 
-    public Stack<string> GetHexModels()
-    {
-        return hexModels;
-    }
+    public Stack<string> GetHexModels() => hexModels;
 }
