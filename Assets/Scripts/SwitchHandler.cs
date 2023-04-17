@@ -3,41 +3,47 @@ using TMPro;
 
 public class SwitchHandler : MonoBehaviour
 {
-    [SerializeField]
-    GameObject handlerButton;
-    float displaceX;
+    [SerializeField] GameObject handlerButton;
 
-    [SerializeField]
-    Color disableColor;
-    [SerializeField]
-    Color enableColor;
-    
-    bool swModels;
+    [SerializeField] Color disableColor;
+    [SerializeField] Color enableColor;
 
-    [SerializeField]
-    GameObject parent;
-    [SerializeField]
-    GameObject typeModel;
-    [SerializeField]
-    GameObject model;
+    [SerializeField] GameObject parent;
+    [SerializeField] GameObject typeModel;
+    [SerializeField] GameObject model;
+
+    bool isActiveModel; 
 
     TMP_Text typeModelText;
     TMP_Text modelText;
 
+    /*  Statics properties  */
+    static bool stateHEX;
+    static bool stateRGB;
+    static bool stateHSV;
+
     private void Awake()
     {
-        swModels = true;
+        stateHEX = true;
+        stateRGB = true;
+        stateHSV = true;
+
+        isActiveModel = true;
 
         typeModelText = typeModel.GetComponent<TMP_Text>();
         modelText = model.GetComponent<TMP_Text>();
-        
         enableColor = typeModelText.color;
     }
 
     public void OnSwitchButtonClicked()
     {
+        Transform myPosition;
+        float displaceX;
+
         displaceX = -handlerButton.GetComponent<RectTransform>().anchoredPosition.x;
-        handlerButton.GetComponent<RectTransform>().localPosition = new Vector3 (displaceX, 0, 0);
+        myPosition = handlerButton.GetComponent<RectTransform>();
+        myPosition.localPosition = new Vector3 (displaceX, 0, 0);
+        
         Debug.Log($"Switch handler\n" +
             $"Displaced on x: {displaceX}\n");
         ActiveDisableModel();
@@ -53,29 +59,30 @@ public class SwitchHandler : MonoBehaviour
         if (parentName == "HSV")
             stateHSV = !stateHSV;
 
-        if (swModels)
+        if (isActiveModel)
             DisableModel();
         else
             ActivateModel();
-        swModels = !swModels;
+
+        //Mantengo un control sobre el estado del modelo de color
+        isActiveModel = !isActiveModel;
     }
 
     void ActivateModel()
     {
+        /*  Only change the colors  */
         typeModelText.color = enableColor;
         modelText.color = enableColor;
     }
 
     void DisableModel()
     {
+        /*  Only change the colors  */
         typeModelText.color = disableColor;
         modelText.color = disableColor;
     }
 
-    /*  Statics properties and functions    */
-    static bool stateHEX = true;
-    static bool stateRGB = true;
-    static bool stateHSV = true;
+    /*  Statics functions    */
 
     public static bool GetStateHEXModel() => stateHEX;
     public static bool GetStateRGBModel() => stateRGB;

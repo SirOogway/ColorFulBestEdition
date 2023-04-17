@@ -9,28 +9,21 @@ public class History : MonoBehaviour
     public PhoneCameraProjection phoneCameraProjection;
     WebCamTexture camTexture;
 
-    [SerializeField]
-    GameObject history;
-    [SerializeField]
-    GameObject recordPfs;
-    [SerializeField]
-    GameObject parent;
-    [SerializeField]
-    TMP_Text counterText;
-    [SerializeField]
-    GameObject pointer;
-    [SerializeField]
-    Button deleteHistoryButton; 
+    [SerializeField] GameObject history;
+    [SerializeField] GameObject recordPfs;
+    [SerializeField] GameObject parent;
+    [SerializeField] TMP_Text counterText;
+    [SerializeField] GameObject pointer;
+    [SerializeField] Button deleteHistoryButton; 
 
     byte uninstantiatedHexData;
     bool isFirstOpened;
     byte aperturas;
 
     [SerializeField]
-    int limitAmount = 4;
+    int limitAmount = 6;
 
     public bool haveData;
-
 
     private void Update()
     {
@@ -56,7 +49,7 @@ public class History : MonoBehaviour
         pointer.SetActive(false);
 
         /*  Stop camera */
-        camTexture = phoneCameraProjection.camTexture;
+        camTexture = phoneCameraProjection.GetCamTexture();
         if (camTexture.isPlaying)
             camTexture.Stop();
 

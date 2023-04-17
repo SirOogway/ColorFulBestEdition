@@ -7,7 +7,6 @@ public static class SaveManager
 {
     static string dataPath = Application.persistentDataPath + "/color.data";
     static BinaryFormatter binaryFormatter = new BinaryFormatter();
-    //*/**/*/*/*//*/*/
     static ColorData colorsData = new ColorData();
 
     public static void SaveColorData(string hexModel)//no es hexmodel es colorData(rgb pero en porcentajes)
