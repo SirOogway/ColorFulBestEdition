@@ -5,22 +5,13 @@ using System.Runtime.Serialization.Formatters.Binary;
 
 public static class SaveManager
 {
-    static string dataPath = Application.persistentDataPath + "/color.data";
     static BinaryFormatter binaryFormatter = new BinaryFormatter();
+    static string dataPath = Application.persistentDataPath + "/color.data";
     static ColorData colorsData = new ColorData();
 
     public static void SaveColorData(string hexModel)//no es hexmodel es colorData(rgb pero en porcentajes)
     {
-        /*
-         * when path no exist \ok\
-         * when path exist but no contains info \ok\
-         * when path exist and contains info \ok\
-         * 
-         */
-
-        //static ColorData colorsData = new ColorData();
-
-        if (!File.Exists(dataPath))
+        if (!File.Exists(dataPath)) //When no exist path
             using (FileStream fs = File.Create(dataPath))
             {
                 Debug.Log("Path created");
@@ -30,7 +21,7 @@ public static class SaveManager
                 return;
             }
 
-        else if (IsEmptyFile())
+        else if (IsEmptyFile()) //When path exist but no contains info
             using (FileStream writter = File.OpenWrite(dataPath))
             {
                 Debug.Log($"Empty file");
@@ -40,16 +31,14 @@ public static class SaveManager
                 return;
             }
 
-        /*  When path contains data  */
-        //Recovering data and adding new info
-        using (FileStream opener = File.Open(dataPath, FileMode.Open))
+        /*  When path exist and contains data  */
+        using (FileStream opener = File.Open(dataPath, FileMode.Open)) //Recovering data and adding new info
         {
             colorsData = (ColorData)binaryFormatter.Deserialize(opener);
             colorsData.SetHexModel(hexModel);
         }
 
-        //Saving new data
-        using (FileStream writer = new FileStream(dataPath, FileMode.Open))
+        using (FileStream writer = new FileStream(dataPath, FileMode.Open)) //Saving new data
         {
             binaryFormatter.Serialize(writer, colorsData);
             Debug.Log($"Saved: {hexModel}");
@@ -80,7 +69,7 @@ public static class SaveManager
         return colorsData.GetHexModels().Count;
     }
 
-    public static ColorData? LoadHexData()
+    public static ColorData? LoadColorData()
     {
         /*
          * When path no exist \ok\
@@ -118,7 +107,7 @@ public static class SaveManager
             using (FileStream oFS = File.Open(dataPath, FileMode.Open))
             {
                 /*  If the path is empty this block trhows an exception */
-                ColorData colorsData = (ColorData)binaryFormatter.Deserialize(oFS);
+                colorsData = (ColorData)binaryFormatter.Deserialize(oFS);
                 return false;
             }
         }
@@ -129,12 +118,12 @@ public static class SaveManager
         }
     }
 
-
     public static void DeleteData()
     {
         colorsData = new ColorData();
         File.Delete(dataPath);
     }
+
     static void ShowHexColors(ColorData colorsData, string msm ="")
     {
         foreach (string hex in colorsData.GetHexModels())

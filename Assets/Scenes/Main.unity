@@ -3770,8 +3770,7 @@ MonoBehaviour:
   counterText: {fileID: 778478531}
   pointer: {fileID: 1575861959}
   deleteHistoryButton: {fileID: 696408922}
-  limitAmount: 4
-  haveData: 0
+  limitAmount: 6
 --- !u!114 &1730328861
 MonoBehaviour:
   m_ObjectHideFlags: 0

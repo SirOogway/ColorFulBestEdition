@@ -5,7 +5,7 @@ using ColorExtensions;
 using TMPro;
 
 public class History : MonoBehaviour
-{   //VOLVER CLASE ESTATICA Y A SETTINGSOPTIONS TAMBIEN
+{   
     public PhoneCameraProjection phoneCameraProjection;
     WebCamTexture camTexture;
 
@@ -16,19 +16,11 @@ public class History : MonoBehaviour
     [SerializeField] GameObject pointer;
     [SerializeField] Button deleteHistoryButton; 
 
+    [SerializeField] int limitAmount = 6;
     byte uninstantiatedHexData;
     bool isFirstOpened;
     byte aperturas;
-
-    [SerializeField]
-    int limitAmount = 6;
-
-    public bool haveData;
-
-    private void Update()
-    {
-        ///METER BUENA INFO ACA que si se necesita para actualizar titulo por ejemplo o si el boton está activo o inactivo
-    }
+    bool haveData;
 
     public void Save()
     {
@@ -38,8 +30,9 @@ public class History : MonoBehaviour
             return;
         }
 
-        string hexColor = phoneCameraProjection.GetHexColor().ToString();//no es un hexColor, es un colorString
-        SaveManager.SaveColorData(hexColor);
+        string colorString;
+        colorString = phoneCameraProjection.GetHexColor().ToString();
+        SaveManager.SaveColorData(colorString);
         uninstantiatedHexData++;
     }
 
@@ -59,29 +52,30 @@ public class History : MonoBehaviour
          */
 
         /*  Open histoy */
-        isFirstOpened = aperturas == 0;
-        if (aperturas == 0) aperturas++;
-
-        ColorData? hexData = SaveManager.LoadHexData();//ver si realmente es hexdata
+        ColorData? colorData = SaveManager.LoadColorData();
 
         counterText.text = $"{SaveManager.CountData()}/{limitAmount}";
 
-        haveData = hexData == null;
-        DisableDeleteHistoryButton(!haveData);
+        haveData = colorData != null;
+        DisableDeleteHistoryButton(haveData); //When there are data delete button is active 
 
-        //When history is opened in first time and there are data recover and instantiate all data
-        if (isFirstOpened && hexData != null)
+        isFirstOpened = aperturas == 0;
+        //if (isFirstOpened) aperturas++;
+        if (isFirstOpened && colorData != null) //When history is opened in first time and there are data recover and instantiate all data
         {
-            uninstantiatedHexData = (byte)hexData.GetHexModels().Count; 
+            uninstantiatedHexData = (byte)colorData.GetHexModels().Count; 
             isFirstOpened = !isFirstOpened;
+            aperturas++;
         }
 
         history.SetActive(true);
-        InstantiateHexDataOnHistory(hexData, uninstantiatedHexData, isFirstOpened);
+        InstantiateHexDataOnHistory(colorData, uninstantiatedHexData);
 
         uninstantiatedHexData = 0;
     }
+
 #nullable disable
+
     public void Close()
     {
         pointer.SetActive(true);
@@ -96,16 +90,13 @@ public class History : MonoBehaviour
     }
 
 #nullable enable
-    void InstantiateHexDataOnHistory(ColorData? hexData, byte quantityToRecover, bool isFirstOpened)
+    void InstantiateHexDataOnHistory(ColorData? colorData, byte quantityToRecover)
     {
         /*  Empty history   */
         //If there is no data then open the empty histoy 
-        if (hexData == null)
-        {
-            //Pop up or text that contains that no exist data
-             
+        if (colorData == null)
             return;
-        }
+
         bool organizingMultipleInfoOnHistory = false;
         Stack<GameObject> temporalRegister = new Stack<GameObject>();
 
@@ -114,38 +105,35 @@ public class History : MonoBehaviour
         for (byte i = 0; i < quantityToRecover; i++)
         {
             GameObject record;
-            string pixelColor = hexData.GetHexModels().Pop();
+            string pixelColor;
+
+            pixelColor = colorData.GetHexModels().Pop();
             record = Instantiate(recordPfs, parent.transform);
             record.name = $"Record_{pixelColor}";
 
             if (!isFirstOpened)
             {
-                if (quantityToRecover == 1)//nad is tratingMultipleNewInfo is false
+                if (quantityToRecover == 1)
                     record.transform.SetAsFirstSibling();
                 
-                if (quantityToRecover > 1)//nad is tratingMultipleNewInfo is true
+                if (quantityToRecover > 1)
                 {
                     organizingMultipleInfoOnHistory = true;
                     temporalRegister.Push(record);
                 }
             }
             else
-            {
                 record.transform.SetAsFirstSibling();
-            }
             
+            Image image = record.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
 
-
-            /*  Assigning the info    */
-            Image fill = record.transform.GetChild(0).GetChild(0).GetChild(0).GetComponent<Image>();
-            //RGBA(1.000, 1.000, 1.000, 1.000)
-
-            //Recovering the original RGB color of string 
-            //The chanels[3] is ignored because is alpha channel
+            /*  Recovering the original RGB color of string */
+            //The chanels[3] is ignored because is alpha channel and it is not necesary RGBA(1.000, 1.000, 1.000, 1.000)
             string[] channels = pixelColor.Split(", ");
             channels[0] = channels[0].Substring(5);
             channels[2] = channels[2].Substring(0, 5);
 
+            //Rounding to delete the decimals 
             float r = float.Parse(channels[0], System.Globalization.CultureInfo.InvariantCulture);
             float g = float.Parse(channels[1], System.Globalization.CultureInfo.InvariantCulture);
             float b = float.Parse(channels[2], System.Globalization.CultureInfo.InvariantCulture);
@@ -153,35 +141,32 @@ public class History : MonoBehaviour
             Color RGB = new Color(r, g, b);
 
             //Assigning the color to fill
-            fill.color = RGB;
+            image.color = RGB;
 
-            //Assign the info to texts  
             TMP_Text HEX_TMP_Text, RGB_TMP_Text, HSV_TMP_Text;
             string strHexColor, strRGBColor, strHSVColor;
 
+            //Getting the text componets 
             HEX_TMP_Text = record.transform.GetChild(1).GetChild(0).GetChild(1).GetComponent<TMP_Text>();
             RGB_TMP_Text = record.transform.GetChild(1).GetChild(1).GetChild(1).GetComponent<TMP_Text>();
             HSV_TMP_Text = record.transform.GetChild(1).GetChild(2).GetChild(1).GetComponent<TMP_Text>();
 
-
+            //Getting the real model colors 
             strHexColor = ColorUtility.ToHtmlStringRGB(RGB);
             strRGBColor = RGB.ToStringRGB();
             strHSVColor = RGB.ToStringHSV();
 
+            //Assign the info to texts  
             HEX_TMP_Text.text = strHexColor;
             RGB_TMP_Text.text = strRGBColor;
             HSV_TMP_Text.text = strHSVColor;
 
         }
 
-        if (organizingMultipleInfoOnHistory)
-        {
+        // This process is important because the new info is saving in last position on history 
+        if (organizingMultipleInfoOnHistory) //Organizing on top the new info when there are existing info
             foreach (GameObject record in temporalRegister)
-            {
                 record.transform.SetAsFirstSibling();
-            }
-            organizingMultipleInfoOnHistory = false;
-        }
     }
 #nullable disable
 
