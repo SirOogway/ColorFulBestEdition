@@ -28,7 +28,7 @@ public class PhoneCameraProjection : MonoBehaviour
     private void Awake()
     {
         Time.fixedDeltaTime = 1f; //1 excecution every 1 second
-        isPhoneDevice = SystemInfo.deviceType == DeviceType.Handheld;
+        isPhoneDevice = SystemInfo.deviceType == DeviceType.Handheld; 
 
         cam_devices = WebCamTexture.devices; //obtengo los dispositivos de camara, si tiene 1 camara 2 camaras 3 camaras etc
         frontCamera = 0;
@@ -171,5 +171,5 @@ public class PhoneCameraProjection : MonoBehaviour
 
     public WebCamTexture GetCamTexture() => camTexture;
 
-    public Color GetHexColor() => pixelColor;
+    public Color GetPixelColor() => pixelColor;
 }

@@ -8,7 +8,7 @@ public class Clipboard : MonoBehaviour
     public void Copy()
     {
         Color pixelColor;
-        pixelColor = phoneCameraProjection.GetHexColor();
+        pixelColor = phoneCameraProjection.GetPixelColor();
 
         //conversiones de color
         string clipboardText, strHexColor, strRGBColor, strHSVColor;

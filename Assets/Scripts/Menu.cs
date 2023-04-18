@@ -23,8 +23,8 @@ public class Menu : MonoBehaviour
         settings.SetActive(false);
 
         /*  Get respectives scripts of each GameObject   */
-        historyScript = history.GetComponent<History>();
-        settingsScript = settings.GetComponent<SettingsOption>();
+        historyScript = history.GetComponent<History>(); //To access the open method
+        settingsScript = settings.GetComponent<SettingsOption>(); //To access the open method
 
         mainCamera = Camera.main; //Gets the main camera
         isPhoneDevice = SystemInfo.deviceType == DeviceType.Handheld;
@@ -33,6 +33,7 @@ public class Menu : MonoBehaviour
 
     private void Update()
     {
+        /*  To close the menu when clicked or tab out of it  */
         if (isPhoneDevice && Input.touchCount > 0)
         {
             RaycastHit hit;
@@ -50,13 +51,14 @@ public class Menu : MonoBehaviour
             {
                 HideMenu();
                 hit.transform.gameObject.GetComponent<MeshRenderer>().material.color = Color.green;
-                Debug.DrawRay(ray.origin, ray.direction * 100f, Color.cyan, 5f);
+                Debug.DrawRay(ray.origin, ray.direction * 100f, Color.green, 5f); //Draws the ray on scene
             }
         }
     }
 
     public void ShowHideMenu()
     {
+        /* visibility control   */
         isOpen = !isOpen;
         menu.SetActive(!menu.activeSelf);
     }

@@ -6,7 +6,7 @@ using TMPro;
 
 public class History : MonoBehaviour
 {   
-    public PhoneCameraProjection phoneCameraProjection;
+    [SerializeField] PhoneCameraProjection phoneCameraProjection;
     WebCamTexture camTexture;
 
     [SerializeField] GameObject history;
@@ -31,7 +31,7 @@ public class History : MonoBehaviour
         }
 
         string colorString;
-        colorString = phoneCameraProjection.GetHexColor().ToString();
+        colorString = phoneCameraProjection.GetPixelColor().ToString();
         SaveManager.SaveColorData(colorString);
         uninstantiatedHexData++;
     }
